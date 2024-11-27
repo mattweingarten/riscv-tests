@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
 
 //--------------------------------------------------------------------------
 // Input/Reference Data
@@ -24,10 +25,22 @@ int vec_strcmp(const char *src1, const char* src2);
 int main( int argc, char* argv[] )
 {
   // Do the strcmp
-  setStats(1);
+  
+#ifndef PMU 
+setStats(1);
+#endif
+#ifdef PMU
+  start_counters();
+#endif
   int r0 = vec_strcmp(test_str, same_str);
   int r1 = vec_strcmp(test_str, diff_str);
-  setStats(0);
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
 
   // Check the results
   return !(r0 == 0 && r1 != 0);

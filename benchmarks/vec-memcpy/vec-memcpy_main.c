@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
 
 //--------------------------------------------------------------------------
 // Input/Reference Data
@@ -32,10 +33,21 @@ int main( int argc, char* argv[] )
 #endif
 
   // Do the riscv-linux memcpy
-  setStats(1);
+#ifdef PMU
+  start_counters();
+#endif
+  
+#ifndef PMU 
+setStats(1);
+#endif
   vec_memcpy(results_data, input_data, sizeof(int) * DATA_SIZE); //, DATA_SIZE * sizeof(int));
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   // Check the results
   return verify( DATA_SIZE, results_data, input_data );
 }

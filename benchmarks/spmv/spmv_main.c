@@ -5,6 +5,7 @@
 //--------------------------------------------------------------------------
 
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
 
 //--------------------------------------------------------------------------
 // Input/Reference Data
@@ -43,10 +44,20 @@ int main( int argc, char* argv[] )
 #if PREALLOCATE
   spmv(R, val, idx, x, ptr, y);
 #endif
-
-  setStats(1);
+#ifdef PMU
+  start_counters();
+#endif
+  
+#ifndef PMU 
+setStats(1);
+#endif
   spmv(R, val, idx, x, ptr, y);
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   return verifyDouble(R, y, verify_data);
 }

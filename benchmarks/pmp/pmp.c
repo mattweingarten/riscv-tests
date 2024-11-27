@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
 
 volatile int trap_expected;
 volatile int granule;
@@ -199,7 +200,9 @@ int main()
 {
   detect_granule();
   init_pt();
-
+#ifdef PMU
+  start_counters();
+#endif
   const int max_exhaustive = 32;
   exhaustive_test(SCRATCH, max_exhaustive);
   exhaustive_test(SCRATCH + RISCV_PGSIZE - max_exhaustive, max_exhaustive);
@@ -207,6 +210,8 @@ int main()
   test_range(SCRATCH, RISCV_PGSIZE);
   test_range(SCRATCH, RISCV_PGSIZE / 2);
   test_range(SCRATCH + RISCV_PGSIZE / 2, RISCV_PGSIZE / 2);
-
+#ifdef PMU
+  end_counters();
+#endif
   return 0;
 }

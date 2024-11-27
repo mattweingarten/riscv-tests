@@ -11,6 +11,8 @@
 
 #include <string.h>
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
+// #define BARE
 
 //--------------------------------------------------------------------------
 // Input/Reference Data
@@ -28,12 +30,22 @@ int main( int argc, char* argv[] )
   // If needed we preallocate everything in the caches
   memcpy(results_data, input_data, sizeof(int) * DATA_SIZE);
 #endif
-
+#ifdef PMU
+  start_counters();
+#endif
   // Do the riscv-linux memcpy
-  setStats(1);
+  
+#ifndef PMU 
+setStats(1);
+#endif
   memcpy(results_data, input_data, sizeof(int) * DATA_SIZE); //, DATA_SIZE * sizeof(int));
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   // Check the results
   return verify( DATA_SIZE, results_data, input_data );
 }

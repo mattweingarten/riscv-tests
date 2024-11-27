@@ -19,6 +19,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "../../benchmarks/pmu_defs.h"
+#define BARE
 
 
 //--------------------------------------------------------------------------
@@ -42,6 +44,9 @@
 
 void thread_entry(int cid, int nc)
 {
+#ifdef PMU
+  start_counters();
+#endif
    // static allocates data in the binary, which is visible to both threads
    static long results_data[DATA_SIZE];
 
@@ -64,5 +69,8 @@ void thread_entry(int cid, int nc)
      if (res) exit(res);
    }
    barrier(nc);
+#ifdef PMU
+  end_counters();
+#endif
    exit(0);
 }

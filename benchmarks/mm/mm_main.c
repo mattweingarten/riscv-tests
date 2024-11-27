@@ -5,11 +5,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
+// #define BARE
 
 #pragma GCC optimize ("unroll-loops")
 
 void thread_entry(int cid, int nc)
 {
+#ifdef PMU
+  start_counters();
+#endif
   const int R = 8;
   int m, n, p;
   uint64_t s = 0xdeadbeefU;
@@ -68,5 +73,8 @@ void thread_entry(int cid, int nc)
 #endif
 
   barrier(nc);
+  #ifdef PMU
+  end_counters();
+#endif
   exit(0);
 }

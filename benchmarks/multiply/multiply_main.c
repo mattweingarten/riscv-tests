@@ -12,6 +12,8 @@
 #include "util.h"
 
 #include "multiply.h"
+#include "../../benchmarks/pmu_defs.h"
+#define PMU
 
 //--------------------------------------------------------------------------
 // Input/Reference Data
@@ -23,6 +25,7 @@
 
 int main( int argc, char* argv[] )
 {
+
   int i;
   int results_data[DATA_SIZE];
 
@@ -32,14 +35,24 @@ int main( int argc, char* argv[] )
     results_data[i] = multiply( input_data1[i], input_data2[i] );
   }
 #endif
-
-  setStats(1);
+#ifdef PMU
+  start_counters();
+#endif
+  
+#ifndef PMU 
+setStats(1);
+#endif
   for (i = 0; i < DATA_SIZE; i++)
   {
     results_data[i] = multiply( input_data1[i], input_data2[i] );
   }
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   // Check the results
   return verify( DATA_SIZE, results_data, verify_data );
 }

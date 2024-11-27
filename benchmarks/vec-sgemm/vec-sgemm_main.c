@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
 
 //--------------------------------------------------------------------------
 // Input/Reference Data
@@ -30,10 +31,21 @@ int main( int argc, char* argv[] )
 #endif
 
   // Do the sgemm
-  setStats(1);
+  
+#ifndef PMU 
+setStats(1);
+#endif
+#ifdef PMU
+  start_counters();
+#endif
   vec_sgemm_nn(DIM_SIZE, DIM_SIZE, DIM_SIZE, input1_data, DIM_SIZE, input2_data, DIM_SIZE, results_data, DIM_SIZE);
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   // Check the results
   return verifyFloat( ARRAY_SIZE, results_data, verify_data );
 }

@@ -16,6 +16,7 @@
 // algorithm to sovel the puzzle.
 
 #include "util.h"
+#include "../../benchmarks/pmu_defs.h"
 
 // This is the number of discs in the puzzle.
 
@@ -198,6 +199,7 @@ int towers_verify( struct Towers* this )
 
 int main( int argc, char* argv[] )
 {
+  
   struct Towers towers;
   int i;
 
@@ -222,12 +224,22 @@ int main( int argc, char* argv[] )
 #endif
 
   // Solve it
-
+#ifdef PMU
+  start_counters();
+#endif
   towers_clear( &towers );
-  setStats(1);
+  
+#ifndef PMU 
+setStats(1);
+#endif
   towers_solve( &towers );
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   // Check the results
   return towers_verify( &towers );
 }

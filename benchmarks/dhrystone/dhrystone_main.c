@@ -10,6 +10,9 @@
 #pragma GCC optimize ("no-inline")
 
 #include "dhrystone.h"
+#include "../../benchmarks/pmu_defs.h"
+
+#define BARE
 
 void debug_printf(const char* str, ...);
 
@@ -58,6 +61,11 @@ int main (int argc, char** argv)
   /* main program, corresponds to procedures        */
   /* Main and Proc_0 in the Ada version             */
 {
+
+#ifdef PMU
+  start_counters();
+#endif
+
         One_Fifty       Int_1_Loc;
   REG   One_Fifty       Int_2_Loc;
         One_Fifty       Int_3_Loc;
@@ -111,7 +119,10 @@ int main (int argc, char** argv)
     /* Start timer */
     /***************/
 
-    setStats(1);
+    
+#ifndef PMU 
+setStats(1);
+#endif
     Start_Timer();
 
     for (Run_Index = 1; Run_Index <= Number_Of_Runs; ++Run_Index)
@@ -165,7 +176,10 @@ int main (int argc, char** argv)
     /**************/
 
     Stop_Timer();
-    setStats(0);
+    
+#ifndef PMU 
+setStats(0);
+#endif
 
     User_Time = End_Time - Begin_Time;
 
@@ -176,6 +190,11 @@ int main (int argc, char** argv)
       printf("\n");
     } else Done = true;
   }
+
+
+#ifdef PMU
+  end_counters();
+#endif
 
   debug_printf("Final values of the variables used in the benchmark:\n");
   debug_printf("\n");

@@ -10,6 +10,7 @@
 // dataset1.h.
 
 #include "util.h"
+#include "common.h"
 
 #include "median.h"
 
@@ -17,6 +18,8 @@
 // Input/Reference Data
 
 #include "dataset1.h"
+#include "../../benchmarks/pmu_defs.h"
+
 
 //--------------------------------------------------------------------------
 // Main
@@ -30,11 +33,24 @@ int main( int argc, char* argv[] )
   median( DATA_SIZE, input_data, results_data );
 #endif
 
-  // Do the filter
-  setStats(1);
-  median( DATA_SIZE, input_data, results_data );
-  setStats(0);
+// #ifdef PMU
+//   start_counters();
+// #endif
 
+  // Do the filter
+  
+#ifndef PMU 
+setStats(1);
+#endif
+  median( DATA_SIZE, input_data, results_data );
+  
+#ifndef PMU 
+setStats(0);
+#endif
+
+// #ifdef PMU
+//   end_counters();
+// #endif
   // Check the results
   return verify( DATA_SIZE, results_data, verify_data );
 }

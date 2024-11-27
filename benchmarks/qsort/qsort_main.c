@@ -13,6 +13,7 @@
 #include "util.h"
 #include <string.h>
 #include <assert.h>
+#include "../../benchmarks/pmu_defs.h"
 
 // The INSERTION_THRESHOLD is the size of the subarray when the
 // algorithm switches to using an insertion sort instead of
@@ -142,12 +143,23 @@ int main( int argc, char* argv[] )
   if (verify(DATA_SIZE, input_data, input_data))
     return 1;
 #endif
+#ifdef PMU
+  start_counters();
+#endif
 
   // Do the sort
-  setStats(1);
+  
+#ifndef PMU 
+setStats(1);
+#endif
   sort( DATA_SIZE, input_data );
-  setStats(0);
-
+  
+#ifndef PMU 
+setStats(0);
+#endif
+#ifdef PMU
+  end_counters();
+#endif
   // Check the results
   return verify( DATA_SIZE, input_data, verify_data );
 }
